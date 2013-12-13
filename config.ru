@@ -1,5 +1,5 @@
 REPOS = [
-  ['mbpdev.komp.org', 'git@git.mousebiology.org:mbp-dev/pulld.git', 'refs/heads/master', '/u02/home/developers/pushd'],
+  ['mbpdev.komp.org', 'git@git.mousebiology.org:ucd-mbp/pulld.git', 'refs/heads/master', '/u02/home/developers/pulld'],
 ]
 require 'rubygems'
 require 'bundler/setup'
