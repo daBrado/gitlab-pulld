@@ -1,0 +1,66 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides: gitlab-pulld
+# Required-Start: $network
+# Required-Stop: $network
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Do a 'git pull' when provoked by a web hook
+### END INIT INFO
+
+# Conifguration
+USER=pullduser
+GROUP=$USER
+DIR=/path/to/gitlab-pulld
+PORT=14070
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+
+start() {
+  echo -n $"Starting gitlab-pulld: "
+  mkdir -p /var/run/gitlab-pulld
+  chown $USER:$GROUP /var/run/gitlab-pulld
+  daemon --pidfile /var/run/gitlab-pulld/gitlab-pulld.pid --user $USER \
+    /bin/bash -l -c "'cd $DIR && bin/rackup -P /var/run/gitlab-pulld/gitlab-pulld.pid -D -E production -p $PORT'"
+  RETVAL=$?
+  echo
+  [ $RETVAL -eq 0 ] && touch /var/lock/subsys/gitlab-pulld
+}
+
+stop() {
+  echo -n $"Stopping gitlab-pulld: "
+  killproc -p /var/run/gitlab-pulld/gitlab-pulld.pid gitlab-pulld
+  RETVAL=$?
+  echo
+  [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/gitlab-pulld
+}
+
+restart() {
+  stop
+  start
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop) 
+    stop
+    ;;
+  restart)
+    restart
+    ;;
+  status)
+    status -p /var/run/gitlab-pulld/gitlab-pulld.pid gitlab-pulld
+    RETVAL=$?
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart}"
+    exit 1
+esac
+
+exit $RETVAL

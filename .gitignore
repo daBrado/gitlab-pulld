@@ -1,2 +1,4 @@
 .bundle/
 bin/
+vendor/
+repos.rb

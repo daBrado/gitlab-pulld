@@ -1,0 +1,3 @@
+[
+['prod.example.org', 'git@git.example.org:namespace/reponame.git', 'refs/heads/master', '/path/to/git/clone'],
+]

@@ -1,0 +1,12 @@
+description "Daemon to update git repos"
+
+start on runlevel [2345]
+stop on runlevel [016]
+
+setuid pullduser
+setgid pulldgroup
+
+chdir /path/to/gitlab-pulld
+
+respawn
+exec /bin/bash -l -c 'bin/rackup -E production -p 14070'
