@@ -6,11 +6,10 @@ It cab be used for e.g. automatic website deployment when pushing to a given bra
 
 ## Install
 
-To install for deployment, you can do:
+To install for deployment, be sure to have the `bundler` gem installed, and then you can do:
 
     RUBY=/path/to/ruby
-    $RUBY/bin/gem install bundler -i vendor/gem -n bin
-    bin/bundle install --deployment --binstubs --shebang $RUBY/bin/ruby
+    $RUBY/bin/bundle install --deployment --binstubs --shebang $RUBY/bin/ruby
 
 You will also need to create a `repos.rb` file for your environment.  There is an example provided.
 
