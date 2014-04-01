@@ -5,7 +5,12 @@ require 'logger'
 LOG = Logger.new STDERR
 run lambda{|env|
   req = Rack::Request.new env
-  msg = JSON.parse req.body.read
+  begin
+    msg = JSON.parse body=req.body.read
+  rescue JSON::ParserError
+    LOG.error "Cannot parse request #{body}"
+    return [400, {}, []]
+  end
   repo = [req.host, msg['repository']['url'], msg['ref']]
   LOG.info "Request for: #{repo.join(' ')}"
   threads = eval(File.new('./repos.rb').read).select{|i|i[0..2]==repo}.map{|i|
