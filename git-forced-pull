@@ -2,12 +2,18 @@
 dir=$1; branch=$2
 if [[ -z $dir || -z $branch ]]; then echo "Usage: $0 <dir> <branch>"; exit 1; fi
 cd "$dir"
-if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
-  new_branch="discarded-$(hostname -s)-$(date +%s.%N)"
-  echo "Local changes exist; saving into new branch $new_branch and discarding"
-  git -c "user.name=$0" -c "user.email=$(id -un)@$(hostname)" commit --quiet --all --message='Changes discarded during triggered pull'
+cur=$(git symbolic-ref HEAD)
+if [[ -n $(git diff --shortstat HEAD) ]]; then
+  echo "Uncomitted changes; committing to $cur"
+  git -c "user.name=$0" -c "user.email=$(id -un)@$(hostname --long)" commit --quiet --all --message='Uncommitted changes during triggered pull'
+fi
+if ! [[ $cur =~ /$branch$ ]]; then
+  echo "HEAD is currently $cur; will checkout $branch"
+elif [[ -n $(git diff --shortstat origin/"$branch") ]]; then
+  new_branch="$branch-$(hostname --short)-$(date +%s.%N)"
+  echo "$branch has diverged from origin; saving into new branch $new_branch and will reset"
   git branch "$new_branch"
 fi
+git fetch --quiet origin "$branch"
 git checkout --quiet "$branch"
-git fetch --quiet --all
 git reset --quiet --hard origin/"$branch"
