@@ -2,7 +2,7 @@
 dir=$1; branch=$2
 if [[ -z $dir || -z $branch ]]; then echo "usage: $0 <dir> <branch>"; exit 1; fi
 cd "$dir"
-git fetch --quiet origin "$branch"
+git fetch --quiet --all
 cur=$(git symbolic-ref HEAD)
 if [[ -n $(git diff --shortstat HEAD) ]]; then
   echo "uncomitted changes; committing to $cur"
