@@ -1,11 +1,11 @@
 #!/bin/bash -e
 dir=$1; branch=$2
-if [[ -z $dir || -z $branch ]]; then echo "Usage: $0 <dir> <branch>"; exit 1; fi
+if [[ -z $dir || -z $branch ]]; then echo "usage: $0 <dir> <branch>"; exit 1; fi
 cd "$dir"
 git fetch --quiet origin "$branch"
 cur=$(git symbolic-ref HEAD)
 if [[ -n $(git diff --shortstat HEAD) ]]; then
-  echo "Uncomitted changes; committing to $cur"
+  echo "uncomitted changes; committing to $cur"
   git -c "user.name=$0" -c "user.email=$(id -un)@$(hostname --long)" commit --quiet --all --message='Uncommitted changes during triggered pull'
 fi
 if ! [[ $cur =~ /$branch$ ]]; then
@@ -16,6 +16,6 @@ if ! (git merge --quiet --ff-only origin/"$branch"); then
   new_branch="$branch-$(hostname --short)-$(date +%s.%N)"
   echo "$branch has diverged from origin; saving into new branch $new_branch"
   git branch "$new_branch"
-  echo "Resetting to origin/$branch"
+  echo "resetting to origin/$branch"
   git reset --quiet --hard origin/"$branch"
 fi
